@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Post List</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/board.css">
+</head>
+<body>
+<h1>Post List</h1>
+<a href="/posts/new" class="btn">게시글 등록</a>
+<table id="postTable">
+
+    <thead>
+    <tr>
+        <th>No</th>
+        <th>writer</th>
+        <th>title</th>
+        <th>content</th>
+        <th>registered</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchPosts();
+    });
+
+    function fetchPosts() {
+        axios.get('/api/posts')
+            .then(function (response) {
+                const posts = response.data;
+                console.log(posts);
+                const tbody = document.querySelector('#postTable tbody');
+                tbody.innerHTML = '';
+                posts.forEach(function(post) {
+                    const registeredDate = post.registered ? new Date(post.registered).toLocaleDateString() : 'No Date';
+
+                    const row = `
+                    <tr>
+                        <td>${post.no}</td>
+                        <td>${post.writer}</td>
+                        <td>${post.title}</td>
+                        <td>${post.content}</td>
+                        <td>${registeredDate}</td>
+                        <td class="action-buttons">
+                            <a href="/posts/${post.id}/edit" class="btn">수정</a>
+                            <button onclick="deletePost(${post.id})" class="btn btn-danger">삭제</button>
+                        </td>
+                    </tr>
+                `;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+            });
+    }
+
+    function deletePost(id) {
+        if (confirm('정말로 삭제하시겠습니까?')) {
+            axios.delete('/api/posts/' + id)
+                .then(function (response) {
+                    fetchPosts();
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                });
+        }
+    }
+</script>
+</body>
+</html>
