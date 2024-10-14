@@ -1,9 +1,8 @@
 package sesac.spring_boot_mybatis.controller;
 
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sesac.spring_boot_mybatis.dto.UserDTO;
 import sesac.spring_boot_mybatis.service.UserService;
 
@@ -22,5 +21,34 @@ public class UserController {
     @GetMapping
     public List<UserDTO> listUsers() {
         return userService.getAllUsers();
+    }
+
+    // 특정 ID 의 사용자 정보 반환
+    @GetMapping("/{id}")
+    public UserDTO getUser(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
+    // 새 사용자를 생성하고 생성된 사용자 정보 반환
+    @PostMapping
+    public  UserDTO createUser(@RequestBody UserDTO userDTO) {
+        // @RequestBody
+        // - HTTP 요청 본문을 자바 객체로 변환
+        userService.createUser(userDTO);
+        return userDTO;
+    }
+
+    // 특정 ID 의 사용자 정보를 업데이트하고 업테이트 된 정보를 반환
+    @PutMapping("/{id}")
+    public UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        userDTO.setId(id);
+        userService.updateUser(userDTO);
+        return userDTO;
+    }
+
+    // 특정 ID 의 사용자 삭제
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
     }
 }
