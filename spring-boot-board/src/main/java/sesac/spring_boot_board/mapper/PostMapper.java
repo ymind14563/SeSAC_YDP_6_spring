@@ -23,4 +23,7 @@ public interface PostMapper {
 
     @Delete("DELETE FROM posts WHERE id = #{id}")
     void delete(Long id);
+
+    @Select("SELECT * FROM posts WHERE writer = #{writer}")
+    List<Post> findByWriter(String writer);
 }

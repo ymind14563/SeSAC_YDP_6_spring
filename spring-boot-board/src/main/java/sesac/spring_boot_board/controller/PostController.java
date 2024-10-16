@@ -42,4 +42,11 @@ public class PostController {
     public void deletePost(@PathVariable Long id) {
         postService.deletePost(id);
     }
+
+    // 작성자 검색
+    @GetMapping("/search")
+    public List<PostDTO> searchPostsByWriter(@RequestParam String writer) {
+        return postService.getPostsByWriter(writer);
+    }
+
 }

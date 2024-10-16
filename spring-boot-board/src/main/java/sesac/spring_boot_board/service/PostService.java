@@ -8,6 +8,7 @@ import sesac.spring_boot_board.domain.Post;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -67,5 +68,16 @@ public class PostService {
         dto.setRegistered(post.getRegistered());
         return dto;
     }
+
+    // 작성자 검색
+    public List<PostDTO> getPostsByWriter(String writer) {
+        List<Post> posts = postMapper.findByWriter(writer);
+        List<PostDTO> postDTOs = new ArrayList<>();
+        for (Post post : posts) {
+            postDTOs.add(convertToDto(post));
+        }
+        return postDTOs;
+    }
+
 }
 
