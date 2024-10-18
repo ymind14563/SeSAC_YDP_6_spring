@@ -1,6 +1,8 @@
 package sesac.spring_boot_security.controller;
 
 import org.antlr.v4.runtime.Token;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import sesac.spring_boot_security.dto.ResponseDTO;
 import sesac.spring_boot_security.dto.UserDTO;
 import sesac.spring_boot_security.entity.UserEntity;
@@ -25,6 +27,16 @@ public class UserController {
     @Autowired
     private TokenProvider tokenProvider;
 
+    // [after] 패스워드 암호화 적용 후
+
+    /*
+    security/SecurityConfig 대신에 이렇게 작성해도 되지만 장점이 사라지므로 권장되지 않음
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    */
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
         try {
@@ -32,7 +44,8 @@ public class UserController {
             UserEntity user = UserEntity.builder()
                     .email(userDTO.getEmail())
                     .username(userDTO.getUsername())
-                    .password(userDTO.getPassword())
+//                    .password(userDTO.getPassword())
+                    .password(passwordEncoder.encode(userDTO.getPassword())) // 암호화된 비밀번호로 user 객체 생성
                     .build();
 
             // 서비스를 이용해 레포지터리에 사용자 저장
@@ -60,7 +73,8 @@ public class UserController {
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
         UserEntity user = service.getByCredentials(
                 userDTO.getEmail(),
-                userDTO.getPassword()
+                userDTO.getPassword(),
+                passwordEncoder // [after] 패스워드 암호화 적용 후
         );
 
         if (user != null) {
